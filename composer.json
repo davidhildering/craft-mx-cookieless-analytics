@@ -1,43 +1,37 @@
 {
-    "name": "metrixs/mx-cookieless-analytics",
-    "description": "Cookieless, privacy-friendly web analytics. Opt-in tracking (off until you connect), GDPR-friendly, EU-hosted. Automatic site verification, no DNS records needed.",
-    "type": "craft-plugin",
-    "version": "1.0.0",
-    "keywords": [
-        "analytics",
-        "privacy",
-        "gdpr",
-        "cookieless",
-        "craftcms"
-    ],
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "MetriXs Analytics",
-            "homepage": "https://metrixs.eu"
-        }
-    ],
-    "require": {
-        "php": ">=8.2",
-        "craftcms/cms": "^5.0.0"
-    },
-    "autoload": {
-        "psr-4": {
-            "metrixs\\mxcookielessanalytics\\": "src/"
-        }
-    },
-    "support": {
-        "email": "info@metrixs.eu",
-        "issues": "https://github.com/davidhildering/craft-mx-cookieless-analytics/issues",
-        "source": "https://github.com/davidhildering/craft-mx-cookieless-analytics",
-        "docs": "https://docs.metrixs.eu/features/craft/"
-    },
-    "extra": {
-        "name": "MX Cookieless Analytics",
-        "handle": "mx-cookieless-analytics",
-        "developer": "MetriXs Analytics",
-        "developerUrl": "https://metrixs.eu",
-        "documentationUrl": "https://docs.metrixs.eu/features/craft/",
-        "class": "metrixs\\mxcookielessanalytics\\Plugin"
+  "name": "metrixs/mx-cookieless-analytics",
+  "description": "Cookieless, privacy-friendly web analytics. Opt-in tracking (off until you connect), GDPR-friendly, EU-hosted. Automatic site verification, no DNS records needed.",
+  "type": "craft-plugin",
+  "version": "1.0.0",
+  "keywords": ["analytics", "privacy", "gdpr", "cookieless", "craftcms"],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "MetriXs Analytics",
+      "homepage": "https://metrixs.eu"
     }
+  ],
+  "require": {
+    "php": ">=8.2",
+    "craftcms/cms": "^5.0.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "metrixs\\mxcookielessanalytics\\": "src/"
+    }
+  },
+  "support": {
+    "email": "info@metrixs.eu",
+    "issues": "https://github.com/davidhildering/craft-mx-cookieless-analytics/issues",
+    "source": "https://github.com/davidhildering/craft-mx-cookieless-analytics",
+    "docs": "https://docs.metrixs.eu/features/craft/"
+  },
+  "extra": {
+    "name": "MX Cookieless Analytics",
+    "handle": "mx-cookieless-analytics",
+    "developer": "MetriXs Analytics",
+    "developerUrl": "https://metrixs.eu",
+    "documentationUrl": "https://docs.metrixs.eu/features/craft/",
+    "class": "metrixs\\mxcookielessanalytics\\Plugin"
+  }
 }
