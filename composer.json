@@ -3,13 +3,7 @@
   "description": "Cookieless, privacy-friendly web analytics. Opt-in tracking (off until you connect), GDPR-friendly, EU-hosted. Automatic site verification, no DNS records needed. Includes an AI traffic panel, GEO/SEO/security audits (Team and Pro), and a read-only MCP server for AI assistants.",
   "type": "craft-plugin",
   "version": "1.0.0",
-  "keywords": [
-    "analytics",
-    "privacy",
-    "gdpr",
-    "cookieless",
-    "craftcms"
-  ],
+  "keywords": ["analytics", "privacy", "gdpr", "cookieless", "craftcms"],
   "license": "MIT",
   "authors": [
     {
