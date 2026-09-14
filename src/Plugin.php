@@ -59,17 +59,53 @@ class Plugin extends BasePlugin
 
             // Control-panel requests: run the connect handshake right after
             // this plugin's settings are saved (post-write — the result is
-            // never clobbered by the form post).
-            Event::on(
-                Plugins::class,
-                Plugins::EVENT_AFTER_SAVE_PLUGIN_SETTINGS,
-                function (PluginEvent $e) {
-                    if ($e->plugin === $this) {
-                        $this->runHandshake();
+            // never clobbered by the form post), and offer the one-click
+            // connect while the site is not connected yet.
+            if ($request->getIsCpRequest()) {
+                Event::on(
+                    Plugins::class,
+                    Plugins::EVENT_AFTER_SAVE_PLUGIN_SETTINGS,
+                    function (PluginEvent $e) {
+                        if ($e->plugin === $this) {
+                            $this->runHandshake();
+                        }
                     }
-                }
-            );
+                );
+                $this->registerConnectAlert();
+            }
         });
+    }
+
+    /**
+     * One-click connect (Phase 2, docs/mobile-onboarding-plan.md): an alert
+     * banner in the control panel while the site is not connected, linking
+     * to the connect controller's start action. Admins only — connecting
+     * decides where the site's analytics go.
+     *
+     * @return void
+     */
+    private function registerConnectAlert(): void
+    {
+        if (!class_exists(\craft\services\Cp::class)) {
+            return;
+        }
+        Event::on(
+            \craft\services\Cp::class,
+            \craft\services\Cp::EVENT_REGISTER_ALERTS,
+            function (\craft\events\RegisterCpAlertsEvent $e) {
+                if (!Craft::$app->getUser()->getIsAdmin()) {
+                    return;
+                }
+                if ($this->getSettings()->connected) {
+                    return;
+                }
+                $e->alerts[] = \craft\helpers\Html::a(
+                    'Connect with MetriXs',
+                    \craft\helpers\UrlHelper::actionUrl('mx-cookieless-analytics/connect/start')
+                )
+                . ' — one-click connect: create (or open) your MetriXs account and this site is added, connected and verified automatically.';
+            }
+        );
     }
 
     // ─── Tracker injection ────────────────────────────────────────────────
@@ -215,6 +251,64 @@ class Plugin extends BasePlugin
     }
 
     // ─── helpers ──────────────────────────────────────────────────────────
+
+    /**
+     * Merge values into the plugin settings and persist them (public so the
+     * connect controller can store the OAuth state / exchanged API key).
+     *
+     * @param array<string, mixed> $values
+     * @return void
+     */
+    public function saveSettingsValues(array $values): void
+    {
+        $settings = $this->getSettings();
+        foreach ($values as $key => $value) {
+            $settings->$key = $value;
+        }
+        Craft::$app->getPlugins()->savePluginSettings($this, $values);
+    }
+
+    /**
+     * POST JSON to a MetriXs API endpoint (public so the connect controller
+     * can run the unauthenticated key exchange).
+     *
+     * @param string $path   API path.
+     * @param mixed  $body   JSON body.
+     * @param string|null $apiKey Bearer key; null = the stored one.
+     * @return array{ok: bool, status: int, data: array|null}
+     */
+    public function postJson(string $path, $body = [], ?string $apiKey = null): array
+    {
+        return $this->apiPost($path, $body, $apiKey);
+    }
+
+    /**
+     * The site's own origin (scheme + host), preferring the primary site's
+     * base URL — the same source the domain resolution trusts (NOT the Host
+     * header, which a cache in front can poison).
+     *
+     * @return string
+     */
+    public function siteOrigin(): string
+    {
+        try {
+            $site = Craft::$app->getSites()->getPrimarySite();
+            if ($site) {
+                $parts = parse_url($site->baseUrl);
+                if (!empty($parts['host'])) {
+                    $scheme = $parts['scheme'] ?? 'https';
+                    $origin = $scheme . '://' . $parts['host'];
+                    if (!empty($parts['port'])) {
+                        $origin .= ':' . $parts['port'];
+                    }
+                    return rtrim($origin . ($parts['path'] ?? ''), '/');
+                }
+            }
+        } catch (\Throwable $e) {
+            // fall through
+        }
+        return 'https://' . $this->siteDomain();
+    }
 
     /**
      * Merge key/values into the plugin settings and persist them.

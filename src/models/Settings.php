@@ -54,6 +54,18 @@ class Settings extends Model
     public string $challenge = '';
 
     /**
+     * Internal state — the one-click connect CSRF/state token, only stored
+     * between clicking "Connect with MetriXs" and the dashboard callback
+     * (single-use, 15-min TTL, cleared before any use).
+     */
+    public string $oauthState = '';
+
+    /**
+     * Internal state — unix timestamp after which $oauthState is invalid.
+     */
+    public int $oauthExpires = 0;
+
+    /**
      * @inheritdoc
      */
     public function attributeLabels(): array
@@ -66,6 +78,8 @@ class Settings extends Model
             'excludeAdmins' => Craft::t('mx-cookieless-analytics', 'Exclude admins'),
             'connected' => Craft::t('mx-cookieless-analytics', 'Connected'),
             'challenge' => Craft::t('mx-cookieless-analytics', 'Verification challenge'),
+            'oauthState' => Craft::t('mx-cookieless-analytics', 'One-click connect state'),
+            'oauthExpires' => Craft::t('mx-cookieless-analytics', 'One-click connect expiry'),
         ];
     }
 
@@ -76,7 +90,8 @@ class Settings extends Model
     {
         return [
             [['enabled', 'excludeAdmins', 'connected'], 'boolean'],
-            [['apiKey', 'apiBase', 'domain', 'challenge'], 'string'],
+            [['apiKey', 'apiBase', 'domain', 'challenge', 'oauthState'], 'string'],
+            [['oauthExpires'], 'integer'],
             [['apiKey'], 'match', 'pattern' => '/^[A-Za-z0-9_\-]*$/'],
             [['apiKey'], 'default', 'value' => ''],
             [['domain'], 'match', 'pattern' => '/^[a-z0-9.\-]*$/'],
