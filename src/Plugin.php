@@ -37,7 +37,7 @@ class Plugin extends BasePlugin
      * tracker release and publish a new plugin release so sites fetch the
      * fresh script.
      */
-    public const TRACKER_VERSION = '1.1.0';
+    public const TRACKER_VERSION = '1.2.0';
 
     public string $schemaVersion = '1.0.0';
     public bool $hasCpSettings = true;
